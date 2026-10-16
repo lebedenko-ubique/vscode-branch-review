@@ -1,3 +1,7 @@
+This project was created for my use-case of reviewing code: Open a branch (with potentially unstaged changes) and view a list of files that were modified compared to main. Be able to flag lines of code to come back later and be able to make edits in place.
+
+Everything except the paragraph above is AI generated.
+
 # Branch Review
 
 Review **everything** on your current branch, including commits, staged changes, unstaged changes and untracked files, against a base branch or commit. You can flag suspicious lines to come back to later, and you can fix bugs in place.
