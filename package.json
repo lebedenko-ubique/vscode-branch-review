@@ -1,0 +1,345 @@
+{
+  "name": "branch-review",
+  "displayName": "Branch Review",
+  "description": "Review all changes on a branch (commits + staged + unstaged + untracked) against a base, flag lines and track viewed files.",
+  "version": "0.1.0",
+  "publisher": "local",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "SCM Providers",
+    "Other"
+  ],
+  "main": "./out/extension.js",
+  "activationEvents": [
+    "workspaceContains:.git",
+    "onView:branchReview.files"
+  ],
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "branchReview",
+          "title": "Branch Review",
+          "icon": "media/review.svg"
+        }
+      ]
+    },
+    "views": {
+      "branchReview": [
+        {
+          "id": "branchReview.files",
+          "name": "Review"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "branchReview.files",
+        "contents": "No git repository found in this workspace.\n[Refresh](command:branchReview.refresh)"
+      }
+    ],
+    "commands": [
+      {
+        "command": "branchReview.refresh",
+        "title": "Refresh",
+        "category": "Branch Review",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "branchReview.changeBase",
+        "title": "Change Base Branch / Commit…",
+        "category": "Branch Review",
+        "icon": "$(git-compare)"
+      },
+      {
+        "command": "branchReview.openDiff",
+        "title": "Open Diff",
+        "category": "Branch Review"
+      },
+      {
+        "command": "branchReview.openFile",
+        "title": "Open File",
+        "category": "Branch Review",
+        "icon": "$(go-to-file)"
+      },
+      {
+        "command": "branchReview.markViewed",
+        "title": "Mark as Viewed",
+        "category": "Branch Review",
+        "icon": "$(check)"
+      },
+      {
+        "command": "branchReview.markViewedAndNext",
+        "title": "Mark as Viewed & Open Next",
+        "category": "Branch Review",
+        "icon": "$(check-all)"
+      },
+      {
+        "command": "branchReview.markUnviewed",
+        "title": "Mark as Unviewed",
+        "category": "Branch Review",
+        "icon": "$(circle-large-outline)"
+      },
+      {
+        "command": "branchReview.nextFile",
+        "title": "Open Next Unreviewed File",
+        "category": "Branch Review",
+        "icon": "$(arrow-down)"
+      },
+      {
+        "command": "branchReview.flagLine",
+        "title": "Flag Line(s) for Review",
+        "category": "Branch Review",
+        "icon": "$(flag)"
+      },
+      {
+        "command": "branchReview.unflagLine",
+        "title": "Remove Review Flag",
+        "category": "Branch Review"
+      },
+      {
+        "command": "branchReview.editFlag",
+        "title": "Edit Flag Note",
+        "category": "Branch Review",
+        "icon": "$(edit)"
+      },
+      {
+        "command": "branchReview.removeFlag",
+        "title": "Remove Flag",
+        "category": "Branch Review",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "branchReview.goToFlag",
+        "title": "Go to Flag",
+        "category": "Branch Review"
+      },
+      {
+        "command": "branchReview.copyFlagsMarkdown",
+        "title": "Copy Flags as Markdown",
+        "category": "Branch Review",
+        "icon": "$(copy)"
+      },
+      {
+        "command": "branchReview.clearFlags",
+        "title": "Clear All Flags",
+        "category": "Branch Review",
+        "icon": "$(clear-all)"
+      },
+      {
+        "command": "branchReview.resetViewed",
+        "title": "Reset Viewed State",
+        "category": "Branch Review"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "branchReview.changeBase",
+          "when": "view == branchReview.files",
+          "group": "navigation@1"
+        },
+        {
+          "command": "branchReview.nextFile",
+          "when": "view == branchReview.files",
+          "group": "navigation@2"
+        },
+        {
+          "command": "branchReview.refresh",
+          "when": "view == branchReview.files",
+          "group": "navigation@3"
+        },
+        {
+          "command": "branchReview.copyFlagsMarkdown",
+          "when": "view == branchReview.files",
+          "group": "1_flags@1"
+        },
+        {
+          "command": "branchReview.clearFlags",
+          "when": "view == branchReview.files",
+          "group": "1_flags@2"
+        },
+        {
+          "command": "branchReview.resetViewed",
+          "when": "view == branchReview.files",
+          "group": "2_viewed@1"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "branchReview.markViewed",
+          "when": "view == branchReview.files && viewItem == file.unviewed",
+          "group": "inline@2"
+        },
+        {
+          "command": "branchReview.markUnviewed",
+          "when": "view == branchReview.files && viewItem == file.viewed",
+          "group": "inline@2"
+        },
+        {
+          "command": "branchReview.openFile",
+          "when": "view == branchReview.files && viewItem =~ /^file\\./",
+          "group": "inline@1"
+        },
+        {
+          "command": "branchReview.markViewed",
+          "when": "view == branchReview.files && viewItem == file.unviewed",
+          "group": "1_review@1"
+        },
+        {
+          "command": "branchReview.markUnviewed",
+          "when": "view == branchReview.files && viewItem == file.viewed",
+          "group": "1_review@1"
+        },
+        {
+          "command": "branchReview.openFile",
+          "when": "view == branchReview.files && viewItem =~ /^file\\./",
+          "group": "1_review@2"
+        },
+        {
+          "command": "branchReview.editFlag",
+          "when": "view == branchReview.files && viewItem == flag",
+          "group": "inline@1"
+        },
+        {
+          "command": "branchReview.removeFlag",
+          "when": "view == branchReview.files && viewItem == flag",
+          "group": "inline@2"
+        },
+        {
+          "command": "branchReview.editFlag",
+          "when": "view == branchReview.files && viewItem == flag",
+          "group": "1_flag@1"
+        },
+        {
+          "command": "branchReview.removeFlag",
+          "when": "view == branchReview.files && viewItem == flag",
+          "group": "1_flag@2"
+        },
+        {
+          "command": "branchReview.copyFlagsMarkdown",
+          "when": "view == branchReview.files && viewItem == group.flagged",
+          "group": "inline@1"
+        }
+      ],
+      "editor/title": [
+        {
+          "command": "branchReview.flagLine",
+          "when": "branchReview.inReviewDiff",
+          "group": "navigation@-3"
+        },
+        {
+          "command": "branchReview.markViewedAndNext",
+          "when": "branchReview.inReviewDiff && !branchReview.activeViewed",
+          "group": "navigation@-2"
+        },
+        {
+          "command": "branchReview.markViewed",
+          "when": "branchReview.inReviewDiff && !branchReview.activeViewed",
+          "group": "navigation@-1"
+        },
+        {
+          "command": "branchReview.markUnviewed",
+          "when": "branchReview.inReviewDiff && branchReview.activeViewed",
+          "group": "navigation@-1"
+        }
+      ],
+      "editor/context": [
+        {
+          "command": "branchReview.flagLine",
+          "when": "editorTextFocus && branchReview.hasRepo",
+          "group": "9_branchReview@1"
+        },
+        {
+          "command": "branchReview.unflagLine",
+          "when": "editorTextFocus && branchReview.lineFlagged",
+          "group": "9_branchReview@2"
+        }
+      ],
+      "editor/lineNumber/context": [
+        {
+          "command": "branchReview.flagLine",
+          "when": "branchReview.hasRepo",
+          "group": "9_branchReview@1"
+        },
+        {
+          "command": "branchReview.unflagLine",
+          "when": "branchReview.hasRepo",
+          "group": "9_branchReview@2"
+        }
+      ],
+      "commandPalette": [
+        { "command": "branchReview.openDiff", "when": "false" },
+        { "command": "branchReview.openFile", "when": "false" },
+        { "command": "branchReview.editFlag", "when": "false" },
+        { "command": "branchReview.removeFlag", "when": "false" },
+        { "command": "branchReview.goToFlag", "when": "false" }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "branchReview.flagLine",
+        "key": "ctrl+alt+f",
+        "mac": "cmd+alt+j",
+        "when": "editorTextFocus && branchReview.hasRepo"
+      },
+      {
+        "command": "branchReview.markViewedAndNext",
+        "key": "ctrl+alt+v",
+        "mac": "cmd+alt+v",
+        "when": "branchReview.inReviewDiff"
+      }
+    ],
+    "configuration": {
+      "title": "Branch Review",
+      "properties": {
+        "branchReview.defaultBase": {
+          "type": "string",
+          "default": "main",
+          "description": "Default branch / ref to compare against. Falls back to master, origin/main, origin/master if it doesn't exist."
+        },
+        "branchReview.useMergeBase": {
+          "type": "boolean",
+          "default": true,
+          "description": "Compare against the merge-base of the base and HEAD (like a pull request) instead of the base's tip."
+        },
+        "branchReview.includeUntracked": {
+          "type": "boolean",
+          "default": true,
+          "description": "Include untracked (new, not yet added) files in the review."
+        },
+        "branchReview.resetViewedOnChange": {
+          "type": "boolean",
+          "default": false,
+          "description": "Move a viewed file back to Unreviewed when its diff changes. When off, the file stays viewed but is marked as 'changed since viewed'."
+        }
+      }
+    },
+    "colors": [
+      {
+        "id": "branchReview.flaggedLineBackground",
+        "description": "Background of lines flagged for review.",
+        "defaults": {
+          "dark": "#ffb02e22",
+          "light": "#ffb02e33",
+          "highContrast": "#ffb02e33"
+        }
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "package": "vsce package --allow-missing-repository"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/vscode": "^1.90.0",
+    "@vscode/vsce": "^3.2.0",
+    "typescript": "^5.6.0"
+  }
+}
